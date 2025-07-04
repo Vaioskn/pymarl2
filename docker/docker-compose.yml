@@ -1,0 +1,8 @@
+services:
+  pymarlzooplus_app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ailabdsunipi/pymarlzooplus:latest
+    network_mode: host
+    command: tail -f /dev/null

@@ -1,0 +1,96 @@
+env: "overcooked"
+
+env_args:
+  key: null
+  time_limit: 500  # Episode horizon, by default 500
+  reward_type: null  # Options: "shaped", "sparse"
+  render: False
+
+test_greedy: True
+test_nepisode: 100
+test_interval: 50000
+log_interval: 50000
+runner_log_interval: 10000
+learner_log_interval: 10000
+t_max: 40050000
+
+# Overcooked
+# https://github.com/HumanCompatibleAI/overcooked_ai
+# args: key="asymmetric_advantages", time_limit=500, reward_type="shaped"/"sparse"
+# RUN: python3 pymarlzooplus/main.py --config=qmix --env-config=overcooked with env_args.time_limit=500 env_args.key="asymmetric_advantages" env_args.reward_type="sparse"
+
+# layouts (which is the "key" in the "env_args") options:
+
+#   "cramped_room"                                              Popular (1): presents low-level coordination challenges: in this shared, confined space it is very easy for the agents to collide
+# All orders:
+# - ('onion', 'onion', 'onion'), value: 20, bonus: 2, final value: value*bonus=40 (received by a single agent)
+
+#   "asymmetric_advantages"                                     Popular (2): tests whether players can choose high-level strategies that play to their strengths
+# All orders:
+# - ('onion', 'onion', 'onion'), value: 20, bonus: 2, final value: value*bonus=40 (received by a single agent)
+
+#   "coordination_ring"                                         Popular (3): players must coordinate to travel between the bottom left and top right corners of the layout
+# All orders:
+# - ('onion', 'onion', 'onion'), value: 20, bonus: 2, final value: value*bonus=40 (received by a single agent)
+
+#   "counter_circuit"                                           Popular (4): involves a non-obvious coordination strategy, where onions are passed over the counter to the pot, rather than being carried around.
+# All orders:
+# - ('onion', 'tomato', 'tomato')
+# - ('onion', 'onion', 'tomato')
+# - ('onion', 'tomato')
+# Bonus orders:
+# - ('onion', 'tomato')
+
+#   "random3"                                                   Popular: require that agents are capable of not blocking each other
+#   "random0"                                                   Popular: has different elements at each side of the layout division so cooperation is mandatory for winning
+#   "unident"                                                   Popular: has enough elements at each side of the kitchen for each agent to serve soups by themselves without the need of the other, so cooperation is not mandatory for winning, but desirable for optimality
+#   "forced_coordination"                                       Popular: removes collision coordination problems, and forces players to develop a high-level joint strategy, since neither player can serve a dish by themselves
+#   "soup_coordination"
+#   "small_corridor"
+#   "simple_tomato"
+#   "simple_o_t"
+#   "simple_o"
+#   "schelling_s"
+#   "schelling"
+#   "m_shaped_s"
+#   "long_cook_time"
+#   "large_room"
+#   "forced_coordination_tomato"
+#   "cramped_room_tomato"
+#   "cramped_room_o_3orders"
+#   "asymmetric_advantages_tomato"
+#   "bottleneck"
+#   "cramped_corridor"
+#   "counter_circuit_o_1order"
+#   "corridor"                                                    NOTE: the first time wait ~10 minutes
+#   "centre_objects"                                              NOTE: the first time wait 3-4 minutes
+#   "centre_pots"                                                 NOTE: the first time wait 20-30 seconds
+
+# The reward provided is the sum of the mdp_infos["sparse_reward_by_agent"].
+
+# The sparse reward is calculated ONLY based on "deliver_soup" (if the order is ready and based on the order bonus)
+# and is the same for both agents.
+
+# The shaped reward is calculated based on the following setting:
+#  BASE_REW_SHAPING_PARAMS = {
+#      "PLACEMENT_IN_POT_REW": 3,
+#      "DISH_PICKUP_REWARD": 3,
+#      "SOUP_PICKUP_REWARD": 5,
+#      "DISH_DISP_DISTANCE_REW": 0,
+#      "POT_DISTANCE_REW": 0,
+#      "SOUP_DISTANCE_REW": 0,
+#  }
+# which are returned based on the following conditions:
+#  - is_dish_pickup_useful --> "DISH_PICKUP_REWARD"
+#  - soup_ready_at_location --> "SOUP_PICKUP_REWARD" (conditional on the agent position)
+#  - not soup.is_full --> "PLACEMENT_IN_POT_REW" (conditional on the agent position)
+
+# All recipes:
+# - ('onion',), ('onion', 'onion'),
+# - ('onion', 'onion', 'onion'),
+# - ('tomato',),
+# - ('tomato', 'tomato'),
+# - ('tomato', 'tomato', 'tomato'),
+# - ('onion', 'tomato'),
+# - ('onion', 'onion', 'tomato'),
+# - ('onion', 'tomato', 'tomato')]

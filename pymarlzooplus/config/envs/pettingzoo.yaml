@@ -1,0 +1,309 @@
+env: "pettingzoo"
+
+env_args:
+  key: null
+  time_limit: null  # Episode horizon. Not used in "classic" environments except from: Rock Paper Scissors.
+  render_mode: "rgb_array" # Options: "human", "rgb_array
+  partial_observation: False # Choices: True or False. Only applicable to "Entombed Cooperative" and "Space Invaders"
+  trainable_cnn: False # When this is True, a pretrained frozen image encoder is used as specified in 'image_encoder'. If it is False, the NatureCNN is used, adopted from openAI: # https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/torch_layers.py.
+  image_encoder: "ResNet18" # Options: "ResNet18", "SlimSAM", "CLIP"
+  image_encoder_batch_size: 1  # How many images to encode in a single pass.
+  image_encoder_use_cuda: True  # Whether to load image-encoder(s) in GPU or not.
+  centralized_image_encoding: True  # In the case of 'parallel_runner', when this argument is True, a single image encoder is used which receives the image-observations from all parallel threads. This reduces the RAM required.
+  kwargs: "" # Use in terminal: env_args.kwargs="('arg1',arg1_value), ('arg2',arg2_value)"
+
+test_greedy: True
+test_nepisode: 100
+test_interval: 50000
+log_interval: 50000
+runner_log_interval: 10000
+learner_log_interval: 10000
+t_max: 5050000
+
+
+## Butterfly environments
+
+# Pistonball
+# https://pettingzoo.farama.org/environments/butterfly/pistonball/
+# key: "pistonball_v6"
+# args: max_cycles=125, render_mode="human", n_pistons=20, time_penalty=-0.1, continuous=True, random_drop=True, random_rotate=True, ball_mass=0.75, ball_friction=0.3, ball_elasticity=1.5
+# RUN:  python pymarlzooplus/main.py --config=qmix --env-config=pettingzoo with env_args.key="pistonball_v6" env_args.time_limit=125 env_args.kwargs="('n_pistons',4),"
+
+# Cooperative Pong
+# https://pettingzoo.farama.org/environments/butterfly/cooperative_pong/
+# key: "cooperative_pong_v5"
+# args: max_cycles=900, render_mode="human", ball_speed=9, left_paddle_speed=12, right_paddle_speed=12, cake_paddle=True, max_cycles=900, bounce_randomness=False, max_reward=100, off_screen_penalty=-10
+# RUN: python pymarlzooplus/main.py --config=qmix --env-config=pettingzoo with env_args.key="cooperative_pong_v5"
+
+# Knights Archers Zombies
+# https://pettingzoo.farama.org/environments/butterfly/knights_archers_zombies/
+# key: "knights_archers_zombies_v10"
+# args: spawn_rate=20, num_archers=2, num_knights=2, max_zombies=10, max_arrows=10, killable_knights=True, killable_archers=True, pad_observation=True, line_death=False, max_cycles=900, vector_state=True (It should be False), use_typemasks=False, sequence_space=False
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+
+## Atari environments
+## All (the following) atari environments have these default args: obs_type='rgb_image', full_action_space=True, max_cycles=100000, auto_rom_install_path=None)
+
+# Entombed Cooperative
+# https://pettingzoo.farama.org/environments/atari/entombed_cooperative/
+# key: "entombed_cooperative_v3"
+# RUN: python3 pymarlzooplus/main.py --config=qmix --env-config=pettingzoo with env_args.key="entombed_cooperative_v3"
+
+# Space Invaders
+# https://pettingzoo.farama.org/environments/atari/space_invaders/
+# key: "space_invaders_v2"
+# args: alternating_control=False, moving_shields=True, zigzaging_bombs=False, fast_bomb=False, invisible_invaders=False
+# RUN: python3 pymarlzooplus/main.py --config=qmix --env-config=pettingzoo with env_args.key="space_invaders_v2"
+
+# Basketball Pong
+# https://pettingzoo.farama.org/environments/atari/basketball_pong/
+# key: "basketball_pong_v3"
+# args: num_players=2/4
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Boxing
+# https://pettingzoo.farama.org/environments/atari/boxing/
+# key: "boxing_v2"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Combat: Plane
+# https://pettingzoo.farama.org/environments/atari/combat_plane/
+# key: "combat_plane_v2"
+# args: game_version="jet"/"bi-plane", guided_missile=True
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Combat: Tank
+# https://pettingzoo.farama.org/environments/atari/combat_tank/
+# key: "combat_tank_v2"
+# args: has_maze=True, is_invisible=False, billiard_hit=True
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Double Dunk
+# https://pettingzoo.farama.org/environments/atari/double_dunk/#
+# key: "double_dunk_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Emtombed: Competitive
+# https://pettingzoo.farama.org/environments/atari/entombed_competitive/
+# key: "entombed_competitive_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Flag Capture
+# https://pettingzoo.farama.org/environments/atari/flag_capture/
+# key: "flag_capture_v2"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Foozpong
+# https://pettingzoo.farama.org/environments/atari/foozpong/
+# key: "foozpong_v3"
+# args: num_players=2/4
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Ice Hockey
+# https://pettingzoo.farama.org/environments/atari/ice_hockey/
+# key: "ice_hockey_v2"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Joust
+# https://pettingzoo.farama.org/environments/atari/joust/
+# key: "joust_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Mario Bros
+# https://pettingzoo.farama.org/environments/atari/mario_bros/
+# key: "mario_bros_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Maze Craze
+# https://pettingzoo.farama.org/environments/atari/maze_craze/
+# key: "maze_craze_v3"
+# args: game_version="robbers"/“race”/“capture”, visibilty_level=0/1/2/3
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Othello
+# https://pettingzoo.farama.org/environments/atari/othello/
+# key: "othello_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Pong
+# https://pettingzoo.farama.org/environments/atari/pong/
+# key: "pong_v3"
+# args: num_players=2/4
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Quadrapong
+# https://pettingzoo.farama.org/environments/atari/quadrapong/
+# key: "quadrapong_v4"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Space War
+# https://pettingzoo.farama.org/environments/atari/space_war/
+# key: "space_war_v2"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Surround
+# https://pettingzoo.farama.org/environments/atari/surround/
+# key: "surround_v2"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Tennis
+# https://pettingzoo.farama.org/environments/atari/tennis/
+# key: "tennis_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Video Checkers
+# https://pettingzoo.farama.org/environments/atari/video_checkers/
+# key: "video_checkers_v4"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Volleyball Pong
+# https://pettingzoo.farama.org/environments/atari/volleyball_pong/
+# key: "volleyball_pong_v3"
+# args: num_players=4/2
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Warlords
+# https://pettingzoo.farama.org/environments/atari/warlords/
+# key: "warlords_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Wizard of Wor
+# https://pettingzoo.farama.org/environments/atari/wizard_of_wor/
+# key: "wizard_of_wor_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+
+## Classic environments
+
+# Chess
+# https://pettingzoo.farama.org/environments/classic/chess/
+# key: "chess_v6"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Connect Four
+# https://pettingzoo.farama.org/environments/classic/connect_four/
+# key: "connect_four_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Gin Rummy
+# https://pettingzoo.farama.org/environments/classic/gin_rummy/
+# key: "gin_rummy_v4"
+# args: knock_reward=0.5, gin_reward=1.0, opponents_hand_visible=False
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Go
+# https://pettingzoo.farama.org/environments/classic/go/
+# key: "go_v5"
+# args: board_size=19, komi=7.5
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Hanabi
+# https://pettingzoo.farama.org/environments/classic/hanabi/
+# key: "hanabi_v5"
+# args: colors=5, ranks=5, players=2, hand_size=4/5 (4 if players >= 4 else 5), max_information_tokens=8, max_life_tokens=3, observation_type='minimal'/'card_knowledge'/'seer'
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Leduc Hold’em
+# https://pettingzoo.farama.org/environments/classic/leduc_holdem/
+# key: "leduc_holdem_v4"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Rock Paper Scissors
+# https://pettingzoo.farama.org/environments/classic/rps/
+# key: "rps_v2"
+# args: num_actions=3/5, max_cycles=15
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Texas Hold’em No Limit
+# https://pettingzoo.farama.org/environments/classic/texas_holdem_no_limit/
+# key: "texas_holdem_no_limit_v6"
+# args: num_players=2
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Texas Hold’em
+# https://pettingzoo.farama.org/environments/classic/texas_holdem/
+# key: "texas_holdem_v4"
+# args: num_players=2
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Tic Tac Toe
+# https://pettingzoo.farama.org/environments/classic/tictactoe/
+# key: "tictactoe_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+
+## MPE environments
+## All (the following) MPE environments have these default args: max_cycles=25, continuous_actions=False
+
+# Simple
+# https://pettingzoo.farama.org/environments/mpe/simple/
+# key: "simple_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Adversary
+# https://pettingzoo.farama.org/environments/mpe/simple_adversary/
+# key: "simple_adversary_v3"
+# args: N=2
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Crypto
+# https://pettingzoo.farama.org/environments/mpe/simple_crypto/
+# key: "simple_crypto_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Push
+# https://pettingzoo.farama.org/environments/mpe/simple_push/
+# key: "simple_push_v3"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Reference
+# https://pettingzoo.farama.org/environments/mpe/simple_reference/
+# key: "simple_reference_v3"
+# args: local_ratio=0.5
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Speaker Listener
+# https://pettingzoo.farama.org/environments/mpe/simple_speaker_listener/
+# key: "simple_speaker_listener_v4"
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Spread
+# https://pettingzoo.farama.org/environments/mpe/simple_spread/
+# key: "simple_spread_v3"
+# args: N=3, local_ratio=0.5
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple Tag
+# https://pettingzoo.farama.org/environments/mpe/simple_tag/
+# key: "simple_tag_v3"
+# args: num_good=1, num_adversaries=3, num_obstacles=2
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Simple World Comm
+# https://pettingzoo.farama.org/environments/mpe/simple_world_comm/
+# key: "simple_world_comm_v3"
+# args: num_good=2, num_adversaries=4, num_obstacles=1, num_food=2, num_forests=2
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+
+## SISL environments
+## All (the following) SISL environments have these default args: max_cycles=500
+
+# Multiwalker
+# https://pettingzoo.farama.org/environments/sisl/multiwalker/
+# key: "multiwalker_v9"
+# args: n_walkers=3, position_noise=1e-3, angle_noise=1e-3, forward_reward=1.0, terminate_reward=-100.0, fall_reward=-10.0, shared_reward=True, terminate_on_fall=True, remove_on_fall=True, terrain_length=200
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Pursuit
+# https://pettingzoo.farama.org/environments/sisl/pursuit/
+# key: "pursuit_v4"
+# args: x_size=16, y_size=16, shared_reward=True, n_evaders=30, n_pursuers=8, obs_range=7, n_catch=2, freeze_evaders=False, tag_reward=0.01, catch_reward=5.0, urgency_reward=-0.1, surround=True, constraint_window=1.0
+# RUN: Not compatible with our training framework, but it can be used with the environment API.
+
+# Waterworld
+# https://pettingzoo.farama.org/environments/sisl/waterworld/
+# key: "waterworld_v4"
+# args: n_pursuers=5, n_evaders=5, n_poisons=10, n_coop=2, n_sensors=20, sensor_range=0.2,radius=0.015, obstacle_radius=0.2, n_obstacles=1, obstacle_coord=[(0.5, 0.5)], pursuer_max_accel=0.01, evader_speed=0.01, poison_speed=0.01, poison_reward=-1.0, food_reward=10.0, encounter_reward=0.01, thrust_penalty=-0.5, local_ratio=1.0, speed_features=True
+# RUN: Not compatible with our training framework, but it can be used with the environment API.

@@ -1,0 +1,43 @@
+# --- HAPPO specific parameters ---
+
+action_selector: "soft_policies"
+mask_before_softmax: True
+
+runner: "parallel"
+
+buffer_size: 10
+batch_size_run: 10
+batch_size: 10
+
+lr: 0.0005
+
+obs_agent_id: False # This is meaningless since each agent has its own actor network
+obs_last_action: False
+obs_individual_obs: False
+
+mac: "happo_mac"
+agent: "rnn_happo"
+agent_output_type: "pi_logits"
+learner: "happo_learner"
+use_rnn: True
+use_orthogonal_init_rnn: True
+use_feature_normalization: True
+use_rnn_critic: True
+use_orthogonal_init_rnn_critic: True
+use_feature_normalization_critic: True
+use_huber_loss: True
+gamma: 0.99
+gae_lambda: 0.95
+critic_type: "happo_critic"
+epochs: 5
+num_mini_batch: 1
+eps_clip: 0.2
+name: "happo"
+huber_delta: 10.0
+entropy_coef: 0.01
+grad_norm_clip: 10
+value_loss_coef: 1
+data_chunk_length: 10
+
+extra_in_buffer: ["log_probs", "values", "hidden_states", "hidden_states_critic"]
+

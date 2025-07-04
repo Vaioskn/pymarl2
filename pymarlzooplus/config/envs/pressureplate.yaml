@@ -1,0 +1,71 @@
+env: "pressureplate"
+
+env_args:
+  key: null # 3 options from gym implemented envs: "pressureplate-linear-4p-v0", "pressureplate-linear-5p-v0", "pressureplate-linear-6p-v0", where the number of agents is 4, 5, or 6, respectively.
+  time_limit: 500 # Episode horizon. Set by default to 500 by EpisodeRunner wrapper
+  render: False
+
+test_greedy: True
+test_nepisode: 100
+test_interval: 50000
+log_interval: 50000
+runner_log_interval: 10000
+learner_log_interval: 10000
+t_max: 20050000
+
+# PressurePlate
+# https://github.com/uoe-agents/pressureplate/
+# args: key, time_limit=500
+# RUN: python3 pymarlzooplus/main.py --config=qmix --env-config=pressureplate with env_args.key="pressureplate-linear-4p-v0" env_args.time_limit=500
+
+# Reward function
+# Each agent receives rewards independent of other agents.
+# If an agent is in the room that contains their assigned plate,
+# their reward is the negative normalized Manhattan distance between their current position and the plate.
+# Otherwise, their reward is the number of rooms between their current room and
+# the room that contains their assigned plate.
+
+## Available map sizes:
+# _sizes = {
+#     "tiny": (5, 5),
+#     "small": (8, 8),
+#     "medium": (15, 9),
+#     "large": (20, 20),
+# }
+
+## Gym registration info
+#  register(
+#      id=f'pressureplate-linear-4p-v0',
+#      entry_point='pressureplate.environment:PressurePlate',
+#      kwargs={
+#          'height': 15,
+#          'width': 9,
+#          'n_agents': 4,
+#          'sensor_range': 4,
+#          'layout': 'linear'
+#      }
+#  )
+#
+#  register(
+#      id=f'pressureplate-linear-5p-v0',
+#      entry_point='pressureplate.environment:PressurePlate',
+#      kwargs={
+#          'height': 19,
+#          'width': 9,
+#          'n_agents': 5,
+#          'sensor_range': 4,
+#          'layout': 'linear'
+#      }
+#  )
+#
+#  register(
+#      id=f'pressureplate-linear-6p-v0',
+#      entry_point='pressureplate.environment:PressurePlate',
+#      kwargs={
+#          'height': 23,
+#          'width': 9,
+#          'n_agents': 6,
+#          'sensor_range': 4,
+#          'layout': 'linear'
+#      }
+#  )

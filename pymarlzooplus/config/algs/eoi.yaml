@@ -1,0 +1,46 @@
+# --- EOI with MAA2C specific parameters ---
+
+action_selector: "soft_policies"
+mask_before_softmax: True
+
+runner: "parallel"
+
+buffer_size: 10
+batch_size_run: 10
+batch_size: 10
+
+# update the target network every {} episodes
+target_update_interval_or_tau: 200
+
+obs_agent_id: True
+obs_last_action: True
+obs_individual_obs: False
+
+agent_output_type: "pi_logits"
+learner: "actor_critic_learner"
+entropy_coef: 0.01
+use_rnn: True
+standardise_returns: False
+standardise_rewards: True
+q_nstep: 5
+critic_type: "cv_critic"
+hidden_dim: 128
+
+# explorer
+has_explorer: True
+explorer: "eoi"
+
+# IVF
+explore_ratio : 0.2
+episode_ratio : 0.4
+ivf_gamma: 0.92
+ivf_tau: 0.995
+ivf_lr: 0.0001
+ivf_alpha_intrinsic_r: 10
+
+# EOI
+eoi_lr: 0.0001
+eoi_batch_size: 256
+eoi_b2_reg: 0.1
+
+name: "eoi"

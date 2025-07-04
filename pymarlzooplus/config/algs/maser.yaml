@@ -1,0 +1,36 @@
+# --- MASER specific parameters ---
+
+# use epsilon greedy action selector
+action_selector: "epsilon_greedy"
+action_selector_strategy: "maser_selector_strategy"
+epsilon_start: 1.0
+epsilon_finish: 0.05
+epsilon_anneal_time: 50000
+evaluation_epsilon: 0.0
+
+runner: "episode"
+batch_size_run: 1
+
+# Buffer
+buffer_size: 5000
+prioritized_buffer: False
+prioritized_buffer_alpha: 0.6
+
+# update the target network every {} episodes
+target_update_interval: 200
+
+# use the Q_Learner to train
+agent_output_type: "q"
+learner: "maser_q_learner"
+mixer: "qmix"
+use_rnn: True
+distance_embed_dim: 128
+mixing_embed_dim: 32
+lam: 0.03
+alpha: 0.5
+ind: 0.8
+mix: 0.2
+expl: 0.3
+dis: 0.7
+
+name: "maser"

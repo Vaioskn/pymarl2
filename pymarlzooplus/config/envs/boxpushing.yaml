@@ -1,0 +1,21 @@
+env: "boxpushing"
+
+env_args:
+  key: null # Options: BoxPushing-6x6-2a-v0
+  seed: null
+  time_limit: 60 # Maximal steps for termination
+  random_init: True # random initial position of agents
+  render: False
+
+test_greedy: True
+test_nepisode: 100
+test_interval: 50000
+log_interval: 50000
+runner_log_interval: 10000
+learner_log_interval: 10000
+t_max: 20050000
+
+# Box Pushing
+# https://github.com/yuchen-x/MacDeepMARL/blob/master/src/rlmamr/my_env/box_pushing.py
+# args: key, seed, time_limit=60, random_init=False
+# RUN: python3 pymarlzooplus/main.py --config=qmix --env-config=boxpushing with env_args.key="BoxPushing-6x6-2a-v0" env_args.time_limit=60
