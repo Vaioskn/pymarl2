@@ -10,6 +10,10 @@ from pymarlzooplus.components.episode_buffer import EpisodeBatch
 from pymarlzooplus.utils.image_encoder import ImageEncoder
 from pymarlzooplus.utils.env_utils import check_env_installation
 
+from modules.bandits.uniform import Uniform
+from modules.bandits.reinforce_hierarchial import EZ_agent as enza
+from modules.bandits.returns_bandit import ReturnsBandit as RBandit
+
 
 # Based (very) heavily on SubprocVecEnv from OpenAI Baselines
 # https://github.com/openai/baselines/blob/master/baselines/common/vec_env/subproc_vec_env.py
@@ -113,6 +117,19 @@ class ParallelRunner:
         self.groups = groups
         self.preprocess = preprocess
 
+        if hasattr(self.args, "noise_dim") and self.args.noise_dim is not None:
+            if not hasattr(self, "noise_returns"): self.noise_returns = {}
+            if not hasattr(self, "noise_test_won"): self.noise_test_won = {}
+            if not hasattr(self, "noise_train_won"): self.noise_train_won = {}
+
+            if self.args.noise_bandit:
+                if self.args.bandit_policy:
+                    self.noise_distrib = enza(self.args, logger=self.logger)
+                else:
+                    self.noise_distrib = RBandit(self.args, logger=self.logger)
+            else:
+               self.noise_distrib = Uniform(self.args)
+
     def get_env_info(self):
         return self.env_info
 
@@ -154,6 +171,11 @@ class ParallelRunner:
                 pre_transition_data["hidden_states_critic"] = hidden_states_dict["hidden_states_critic"]
 
         self.batch.update(pre_transition_data, ts=0)
+
+        if hasattr(self.args, "noise_dim") and self.args.noise_dim is not None:
+            # We assume test_mode=False here as the base runner's reset doesn't accept it.
+            self.noise = self.noise_distrib.sample(self.batch['state'][:,0], False)
+            self.batch.update({"noise": self.noise}, ts=0)
 
         self.t = 0
         self.env_steps_this_run = 0
@@ -310,10 +332,23 @@ class ParallelRunner:
 
         cur_returns.extend(episode_returns)
 
+        if hasattr(self.args, "noise_dim") and self.args.noise_dim is not None:
+            self._update_noise_returns(episode_returns, self.noise, final_env_infos, test_mode)
+            self.noise_distrib.update_returns(self.batch['state'][:,0], self.noise, episode_returns, test_mode, self.t_env)
+
+
         n_test_runs = max(1, self.args.test_nepisode // self.batch_size) * self.batch_size
         if test_mode and (len(self.test_returns) == n_test_runs):
+
+            if hasattr(self.args, "noise_dim") and self.args.noise_dim is not None:
+                self._log_noise_returns(test_mode)
+
             self._log(cur_returns, cur_stats, log_prefix)
-        elif self.t_env - self.log_train_stats_t >= self.args.runner_log_interval:
+        elif not test_mode and (self.t_env - self.log_train_stats_t >= self.args.runner_log_interval):
+
+            if hasattr(self.args, "noise_dim") and self.args.noise_dim is not None:
+                self._log_noise_returns(test_mode)
+
             self._log(cur_returns, cur_stats, log_prefix)
             if hasattr(self.mac.action_selector, "epsilon"):
                 self.logger.log_stat("epsilon", self.mac.action_selector.epsilon, self.t_env)
@@ -330,6 +365,55 @@ class ParallelRunner:
             if k != "n_episodes":
                 self.logger.log_stat(prefix + k + "_mean", v/stats["n_episodes"], self.t_env)
         stats.clear()
+    
+    def _update_noise_returns(self, returns, noise, stats, test_mode):
+        if not hasattr(self, "noise_returns"): self.noise_returns = {}
+        if not hasattr(self, "noise_test_won"): self.noise_test_won = {}
+        if not hasattr(self, "noise_train_won"): self.noise_train_won = {}
+        
+        for n, r in zip(noise, returns):
+            n = int(np.argmax(n))
+            if n in self.noise_returns:
+                self.noise_returns[n].append(r)
+            else:
+                self.noise_returns[n] = [r]
+        
+        noise_won = self.noise_test_won if test_mode else self.noise_train_won
+
+        if stats and "battle_won" in stats[0]:
+            for n, info in zip(noise, stats):
+                if "battle_won" in info:
+                    bw = info["battle_won"]
+                    n = int(np.argmax(n))
+                    if n in noise_won:
+                        noise_won[n].append(bw)
+                    else:
+                        noise_won[n] = [bw]
+
+    def _log_noise_returns(self, test_mode):
+        if not hasattr(self, "noise_returns"): self.noise_returns = {}
+        if not hasattr(self, "noise_test_won"): self.noise_test_won = {}
+        if not hasattr(self, "noise_train_won"): self.noise_train_won = {}
+        
+        prefix = "test" if test_mode else "train"
+        
+        if self.noise_returns:
+            for n, rs in self.noise_returns.items():
+                self.logger.log_stat(f"noise_{prefix}_ret_for_z_{n}", np.mean(rs), self.t_env)
+        
+        noise_won = self.noise_test_won if test_mode else self.noise_train_won
+        if noise_won:
+            for n, rs in noise_won.items():
+                self.logger.log_stat(f"noise_{prefix}_win_rate_for_z_{n}", np.mean(rs), self.t_env)
+
+        self.noise_returns.clear()
+        self.noise_test_won.clear()
+        self.noise_train_won.clear()
+
+    def save_models(self, path):
+        if hasattr(self.args, "noise_bandit") and self.args.noise_bandit:
+            self.noise_distrib.save_model(path)
+
 
 
 def env_worker(remote, env_fn, image_encoder):

@@ -40,4 +40,14 @@ mi_loss: 1
 discrim_size: 32
 discrim_layers: 1
 
+mi_scaler: 0.1
+hard_qs: False
+noise_bandit: True
+bandit_policy: True
+entropy_scaling: 0.01
+bandit_buffer: 128
+bandit_epsilon: 0.05
+bandit_iters: 4
+bandit_batch: 32
+
 name: "maven"
